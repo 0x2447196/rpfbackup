@@ -71,6 +71,7 @@ def thread_download(url, backup_path, completed_path, max_wait_seconds=5):
 
 
 if __name__ == "__main__":
+    MAX_THREADS = 5
     current_directory = os.getcwd()
     threads_path = os.path.join(current_directory, "data", "threads.txt")
     completed_path = os.path.join(current_directory, "data", "completed_urls.txt")
@@ -92,7 +93,7 @@ if __name__ == "__main__":
 
     print(f"finished: {len(completed_urls)}; remaining: {len(urls_to_process)}")
 
-    with Pool(5) as p:
+    with Pool(MAX_THREADS) as p:
         p.starmap(
             thread_download,
             [(url, backup_path, completed_path) for url in urls_to_process],
