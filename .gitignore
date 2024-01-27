@@ -1,4 +1,12 @@
-backup
-data
+data/*.txt
 cookies.txt
 .DS_STORE
+
+# Ignore everything in the backup directory
+backup/*
+
+# But not the directory itself
+!backup/
+
+# Exception to the rules above, don't ignore .gitkeep files
+!.gitkeep
