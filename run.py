@@ -1,7 +1,7 @@
 import requests
 import re
 import subprocess
-from multiprocessing import Pool, Lock
+from multiprocessing import Pool
 import time
 import random
 import os
@@ -38,8 +38,6 @@ def store_all_thread_urls(threads_path):
 
 
 def execute_wget(url, backup_path):
-    time.sleep(random.uniform(1, 5))
-
     thread_page_regex = f"^{re.escape(url)}(/page-[0-9]+)?$"
     data_domain_regex = "data\\.raypeatforum\\.com/.*"
     reject_data_domain_regex = "data\\.raypeatforum\\.com/avatars/.*"
@@ -63,7 +61,9 @@ def execute_wget(url, backup_path):
     subprocess.run(command, shell=True, check=True, cwd=backup_path)
 
 
-def thread_download(url, backup_path, completed_path):
+def thread_download(url, backup_path, completed_path, max_wait_seconds=5):
+    time.sleep(random.uniform(0, max_wait_seconds))
+
     execute_wget(url, backup_path)
 
     with open(completed_path, "a") as f:
@@ -88,10 +88,12 @@ if __name__ == "__main__":
     except FileNotFoundError:
         completed_urls = set()
 
-    urls_to_process = list(all_urls - completed_urls)   
+    urls_to_process = list(all_urls - completed_urls)
 
     print(f"finished: {len(completed_urls)}; remaining: {len(urls_to_process)}")
 
     with Pool(5) as p:
-        p.starmap(thread_download, [(url, backup_path, completed_path) for url in urls_to_process])
-
+        p.starmap(
+            thread_download,
+            [(url, backup_path, completed_path) for url in urls_to_process],
+        )
