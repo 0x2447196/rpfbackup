@@ -3,6 +3,7 @@ use rusqlite::{params, Connection, Result};
 use scraper::{Html, Selector};
 use std::collections::HashSet;
 use walkdir::WalkDir;
+use clap::Parser;
 
 struct Selectors {
     og_url_selector: Selector,
@@ -68,7 +69,7 @@ impl ForumThreadData {
 
             // Insert post
             conn.execute(
-                "INSERT INTO posts (id, user_id, thread_id, thread_order, datetime, content)
+                "INSERT OR IGNORE INTO posts (id, user_id, thread_id, thread_order, datetime, content)
                  VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
                 params![
                     post.post_id,
@@ -187,8 +188,27 @@ fn process_file(html_content: &str, selectors: &Selectors) -> ForumThreadData {
     }
 }
 
+/// Forum Data Processor
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Sets a custom database file
+    #[arg(short, long, default_value = "forum_data.db")]
+    db_path: String,
+
+    /// Sets the input folder of HTML files
+    #[arg(required = true)]
+    input_folder: String,
+}
+
 fn main() -> Result<()> {
-    let conn = Connection::open("forum_data.db")?;
+
+
+    let args = Args::parse();
+
+
+
+    let conn = Connection::open(&args.db_path)?;
 
     // Create tables if they don't exist
     conn.execute(
@@ -207,7 +227,7 @@ fn main() -> Result<()> {
     // Create the selectors once
     let selectors = Selectors::new();
     // Collect all file paths first
-    let paths: Vec<_> = WalkDir::new("../backup/raypeatforum.com")
+    let paths: Vec<_> = WalkDir::new(&args.input_folder)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| {
