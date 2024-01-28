@@ -1,0 +1,12 @@
+[package]
+name = "extractor"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rayon = "1.8.1"
+scraper = "0.18.1"
+walkdir = "2.4.0"
+rusqlite = { version = "0.30.0", features = ["bundled"] }

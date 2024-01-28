@@ -10,3 +10,7 @@ backup/*
 
 # Exception to the rules above, don't ignore .gitkeep files
 !.gitkeep
+
+target
+*.db
+*.tar.gz

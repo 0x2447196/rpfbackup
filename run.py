@@ -47,7 +47,7 @@ def execute_wget(url, backup_path):
     )
 
     command = f"""
-    wget --recursive --no-clobber --page-requisites --content-disposition --adjust-extension --span-hosts \
+    wget --recursive --page-requisites --content-disposition --adjust-extension --span-hosts \
     --convert-links --restrict-file-names=windows \
     --domains raypeatforum.com,data.raypeatforum.com --no-parent \
     --accept-regex '{accept_regex}' \
